@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /contactform/*.js
+Disallow: /css/
+Disallow: /database/
+Disallow: /fonts/
+Disallow: /images/
+Disallow: /img/
+Disallow: /smtp/
+Disallow: /vender/

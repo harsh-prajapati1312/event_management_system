@@ -1,0 +1,127 @@
+<?php
+session_start();
+error_reporting(0);
+include('includes/dbconnection.php');
+
+
+if (isset($_POST['submit2'])) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $address = $_POST['address'];
+    // Database connection assumed
+    $dbh = new PDO('mysql:host=localhost;dbname=royal_event', 'root', '');
+
+    // File Upload
+    $targetDirectory = "../img/"; // Directory where you want to store uploaded files
+    $targetFile = $targetDirectory . basename($_FILES["image"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+    $errors = []; // Array to store error messages
+
+    // Check if image file is a actual image or fake image
+    $check = getimagesize($_FILES["image"]["tmp_name"]);
+    if ($check === false) {
+        $errors[] = "File is not an image.";
+        $uploadOk = 0;
+    }
+
+    // Check if file already exists
+    if (file_exists($targetFile)) {
+        $errors[] = "Sorry, file already exists.";
+        $uploadOk = 0;
+    }
+
+    // Check file size
+    if ($_FILES["image"]["size"] > 500000) {
+        $errors[] = "Sorry, your file is too large.";
+        $uploadOk = 0;
+    }
+
+    // Allow certain file formats
+    if (!in_array($imageFileType, ["jpg", "png", "jpeg", "gif"])) {
+        $errors[] = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        $uploadOk = 0;
+    }
+
+    // Check if $uploadOk is set to 0 by an error
+    if ($uploadOk == 0) {
+        $errors[] = "Sorry, your file was not uploaded.";
+    } else {
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+            $sql = "INSERT INTO contact (name, email, address, image) VALUES (:name, :email, :address, :image)";
+            $query = $dbh->prepare($sql);
+            $query->bindParam(':name', $name, PDO::PARAM_STR);
+            $query->bindParam(':email', $email, PDO::PARAM_STR);
+            $query->bindParam(':address', $address, PDO::PARAM_STR);
+            $query->bindParam(':image', $targetFile, PDO::PARAM_STR);
+            $query->execute();
+            $lastInsertId = $dbh->lastInsertId();
+            if ($lastInsertId > 0) {
+                echo '<script>alert("Employee has been added.")</script>';
+            } else {
+                $errors[] = "Something Went Wrong. Please try again";
+            }
+        } else {
+            $errors[] = "Sorry, there was an error uploading your file.";
+        }
+    }
+
+    // Display errors as alerts
+    if (!empty($errors)) {
+        echo '<script>alert("' . implode('\n', $errors) . '")</script>';
+    }
+}
+?>
+
+
+
+
+
+<?php
+include("conn.php");
+function removeImgPath($string) {
+  return str_replace("../", "", $string);
+}
+$conn=connection();
+$sql="select * from emp";
+$result=$conn->query($sql);
+while($row=$result->fetch_assoc())
+{
+  ?>
+  <div class="col-lg-3 col-md-4">
+            <div class="venue-gallery">
+              <a href="<?php $tmp=removeImgPath($row['image']); echo $tmp; ?>" class="venobox" data-gall="venue-gallery">
+                <img src="<?php $tmp=removeImgPath($row['image']); echo $tmp; ?>" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+
+  <?php
+}
+?>
+ function removeImgPath($string)
+          {
+            return str_replace("../", "", $string);
+          }
+<?php $tmp = removeImgPath($row['image']);
+                  echo $tmp; ?>
+   <?php
+        $conn = connection();
+          $sql = "select * from emp";
+          $result = $conn->query($sql);
+
+          while ($row = $result->fetch_assoc()) {
+            ?>
+          <div class="col-lg-3 col-md-4">
+            <div class="venue-gallery">
+              <a href="<?php $tmp = removeImgPath($row['gimgpath']);
+                  echo $tmp; ?>" class="venobox" data-gall="venue-gallery">
+                <img src="<?php $tmp = removeImgPath($row['gimgpath']);
+                  echo $tmp; ?>" alt="" class="img-fluid">
+              </a>
+            </div>
+          </div>
+          <?php
+}
+          ?>
